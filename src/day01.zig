@@ -26,7 +26,6 @@ fn findSum(list: []u16, value: u16) ?IteratorPair {
 }
 
 pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = &arena.allocator;
