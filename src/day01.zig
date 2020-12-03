@@ -37,14 +37,14 @@ pub fn main() !void {
         const iters = findSum(list, 2020).?;
         const a = list[iters.i];
         const b = list[iters.j];
-        aoc.print("Part 1: {} * {} = {}\n", .{ a, b, @as(usize, a) * b });
+        aoc.print("Day 01, part 1: {}\n", .{ @as(usize, a) * b });
     }
 
     for (list) |a| {
         const iters = findSum(list, 2020 - a) orelse continue;
         const b = list[iters.i];
         const c = list[iters.j];
-        aoc.print("Part 2: {} * {} * {} = {}\n", .{ a, b, c, @as(usize, a) * b * c });
+        aoc.print("Day 02, part 2: {}\n", .{ @as(usize, a) * b * c });
         break;
     }
 }

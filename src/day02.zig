@@ -16,7 +16,7 @@ pub fn main() !void {
             valid += 1;
         }
     }
-    aoc.print("Part 1: {}\n", .{ valid });
+    aoc.print("Day 02, part 1: {}\n", .{ valid });
 
     valid = 0;
     for (input) |i| {
@@ -24,7 +24,7 @@ pub fn main() !void {
             valid += 1;
         }
     }
-    aoc.print("Part 2: {}\n", .{ valid });
+    aoc.print("Day 02, part 2: {}\n", .{ valid });
 }
 
 const input = [_]Password{
