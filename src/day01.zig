@@ -44,7 +44,7 @@ pub fn main() !void {
         const iters = findSum(list, 2020 - a) orelse continue;
         const b = list[iters.i];
         const c = list[iters.j];
-        aoc.print("Day 02, part 2: {}\n", .{ @as(usize, a) * b * c });
+        aoc.print("Day 01, part 2: {}\n", .{ @as(usize, a) * b * c });
         break;
     }
 }
