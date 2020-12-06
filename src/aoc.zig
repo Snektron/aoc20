@@ -81,3 +81,9 @@ pub fn radixSortAlloc(comptime T: type, comptime bucket_bits: Log2Int(T), alloca
 pub fn print(comptime fmt: []const u8, args: anytype) void {
     std.io.getStdOut().writer().print(fmt, args) catch unreachable;
 }
+
+pub fn stripTrailingNewline(text: []const u8) []const u8 {
+    if (text.len > 0 and text[text.len - 1] == '\n')
+        return text[0 .. text.len - 1];
+    return text;
+}

@@ -9,7 +9,7 @@ pub fn build(b: *Builder) void {
     const run_all_step = b.step("run-all", "Run all the days");
 
     comptime var day: usize = 1;
-    inline while (day <= 4) : (day += 1) {
+    inline while (day <= 6) : (day += 1) {
         const exe_name = std.fmt.allocPrint(b.allocator, "day{:0>2}", .{ day }) catch unreachable;
         const run_step_name = std.fmt.allocPrint(b.allocator, "run-day{:0>2}", .{ day }) catch unreachable;
         const src = std.fmt.allocPrint(b.allocator, "src/day{:0>2}.zig", .{ day }) catch unreachable;
@@ -26,4 +26,15 @@ pub fn build(b: *Builder) void {
         run_step.dependOn(&run_cmd.step);
         run_all_step.dependOn(&run_cmd.step);
     }
+
+    const exe = b.addExecutable("all", "src/benchmark.zig");
+    exe.setTarget(target);
+    exe.setBuildMode(mode);
+
+    const run_cmd = exe.run();
+    run_cmd.step.dependOn(b.getInstallStep());
+
+    const run_step = b.step("benchmark", "Benchmark the days");
+    run_step.dependOn(&run_cmd.step);
+    run_all_step.dependOn(&run_cmd.step);
 }
