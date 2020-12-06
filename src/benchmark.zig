@@ -5,7 +5,7 @@ pub fn main() !void {
     var total: usize = 0;
 
     comptime var day = 1;
-    inline while (day <= 6) : (day += 1) {
+    inline while (day <= @import("build_options").days) : (day += 1) {
         comptime var buf: [16]u8 = undefined;
         comptime const src = std.fmt.bufPrint(&buf, "day{:0>2}.zig", .{ day }) catch unreachable;
         comptime const main_fn = @import(src).main;
