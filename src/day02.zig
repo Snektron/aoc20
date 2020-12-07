@@ -9,22 +9,20 @@ const Password = struct {
 };
 
 pub fn main() !void {
-    var valid: usize = 0;
+    var part1_valid: usize = 0;
+    var part2_valid: usize = 0;
     for (input) |i| {
         const occ = std.mem.count(u8, i.password, &[_]u8{ i.letter });
         if (occ >= i.min and occ <= i.max) {
-            valid += 1;
+            part1_valid += 1;
         }
-    }
-    aoc.print("Day 02, part 1: {}\n", .{ valid });
 
-    valid = 0;
-    for (input) |i| {
         if ((i.password[i.min - 1] == i.letter) != (i.password[i.max - 1] == i.letter)) {
-            valid += 1;
+            part2_valid += 1;
         }
     }
-    aoc.print("Day 02, part 2: {}\n", .{ valid });
+    aoc.print("Day 02, part 1: {}\n", .{ part1_valid });
+    aoc.print("Day 02, part 2: {}\n", .{ part2_valid });
 }
 
 const input = [_]Password{

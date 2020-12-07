@@ -87,3 +87,103 @@ pub fn stripTrailingNewline(text: []const u8) []const u8 {
         return text[0 .. text.len - 1];
     return text;
 }
+
+pub const Parser = struct {
+    input: []const u8,
+    offset: usize = 0,
+
+    pub fn peek(self: Parser) ?u8 {
+        return if (self.offset < self.input.len)
+                self.input[self.offset]
+            else
+                null;
+    }
+
+    pub fn consume(self: *Parser) void {
+        self.offset += 1;
+    }
+
+    pub fn eat(self: *Parser, c: u8) bool {
+        const a = self.peek();
+        if (a != null and a.? == c) {
+            self.consume();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    pub fn expect(self: *Parser, c: u8) !void {
+        if (self.eat(c) == false)
+            return error.ParseError;
+    }
+
+    pub fn expectStr(self: *Parser, str: []const u8) !void {
+        for (str) |c| {
+            try self.expect(c);
+        }
+    }
+
+    pub fn skipSpaces(self: *Parser) void {
+        while (self.peek()) |c| {
+            switch (c) {
+                ' ' => self.consume(),
+                else => break,
+            }
+        }
+    }
+
+    pub fn word(self: *Parser) ![]const u8 {
+        const start = self.offset;
+        while (self.peek()) |c| {
+            switch (c) {
+                'a'...'z','A'...'Z' => self.consume(),
+                else => break,
+            }
+        }
+
+        const end = self.offset;
+        if (end - start == 0) {
+            return error.ParseError;
+        }
+
+        return self.input[start .. end];
+    }
+
+    pub fn expectWord(self: *Parser, expected: []const u8) !void {
+        const actual = self.word();
+        if (!std.mem.eql(u8, actual, expected)) {
+            return error.ParseError;
+        }
+    }
+
+    pub fn int(self: *Parser, comptime T: type, base: u8) !T {
+        const start = self.offset;
+        while (self.peek()) |c| {
+            switch (c) {
+                '0'...'9' => self.consume(),
+                else => break,
+            }
+        }
+
+        const end = self.offset;
+        if (end - start == 0) {
+            return error.ParseError;
+        }
+
+        return try std.fmt.parseInt(u8, self.input[start .. end], base);
+    }
+
+    pub fn bagColor(self: *Parser) ![]const u8 {
+        const start = self.offset;
+        _ = try self.word();
+        _ = self.skipSpaces();
+        _ = try self.word();
+
+        const end = self.offset;
+        if (end - start < 3) { // need at least something like 'a b'
+            return error.ParseError;
+        }
+        return self.input[start .. end];
+    }
+};
