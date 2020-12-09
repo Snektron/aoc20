@@ -65,6 +65,7 @@ pub fn main() void {
     aoc.print("Day 08, part 01: {}\n", .{ fcf_result.final_state.acc });
 
     const max = fcf_result.start + fcf_result.period;
+    var start_state = State.initial;
 
     for (input) |*inst, i| {
         const orig = inst.opcode;
@@ -74,7 +75,7 @@ pub fn main() void {
             .nop => .jmp,
         };
 
-        var state = State.initial;
+        var state = start_state;
         var j: usize = 0;
         while (j <= max) : (j += 1) {
             state = state.next(&input);
