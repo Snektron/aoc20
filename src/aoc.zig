@@ -8,7 +8,7 @@ pub fn splitToIntegers(
     allocator: *std.mem.Allocator,
     data: []const u8,
     delims: []const u8
-) ![]T {
+) !std.ArrayList(T) {
     var items = std.ArrayList(T).init(allocator);
     errdefer items.deinit();
 
@@ -18,7 +18,7 @@ pub fn splitToIntegers(
         try items.append(value);
     }
 
-    return items.toOwnedSlice();
+    return items;
 }
 
 fn radix(comptime T: type, comptime bucket_bits: Log2Int(T), shift: Log2Int(T), value: T) Int(.unsigned, bucket_bits) {

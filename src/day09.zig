@@ -23,7 +23,7 @@ pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = &arena.allocator;
-    const list = try aoc.splitToIntegers(usize, allocator, input, "\n");
+    const list = (try aoc.splitToIntegers(usize, allocator, input, "\n")).items;
 
     const p = 25;
     var i: usize = p;

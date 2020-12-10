@@ -29,7 +29,7 @@ pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const allocator = &arena.allocator;
-    const list = try aoc.splitToIntegers(u16, allocator, input, "\n");
+    const list = (try aoc.splitToIntegers(u16, allocator, input, "\n")).items;
 
     try aoc.radixSortAlloc(u16, 4, allocator, list);
 
