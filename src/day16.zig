@@ -84,9 +84,9 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = &arena.allocator;
 
-    const in = try parse(allocator);
+    var in = try parse(allocator);
 
-    var total: usize = 0;
+    var part1: usize = 0;
     var write_index: usize = 0;
     for (in.nearby_tickets) |ticket| {
         var invalid: bool = false;
@@ -96,16 +96,61 @@ pub fn main() !void {
                     break;
                 }
             } else {
-                total += value;
+                part1 += value;
                 invalid = true;
             }
         }
 
         if (invalid) {
-            in.nearby_tickets[write_index] = in.ticket;
+            in.nearby_tickets[write_index] = ticket;
             write_index += 1;
         }
     }
 
-    aoc.print("Day 16, part 1: {}\n", .{ total });
+    aoc.print("Day 16, part 1: {}\n", .{ part1 });
+
+    in.nearby_tickets.len = write_index;
+    var applicable_classes = try allocator.alloc(u64, in.ticket.values.len);
+    const all_set = (@as(u64, 1) << @intCast(u6, in.ticket.values.len)) - 1;
+    std.mem.set(u64, applicable_classes, all_set); // set all as applicable
+
+    for (in.nearby_tickets) |ticket| {
+        for (ticket.values) |value, j| {
+            for (in.classes) |class, i| {
+                const bit = @as(u64, 1) << @intCast(u6, i);
+                if (!class.inRange(value)) {
+                    // Mark field as not applicable
+                    applicable_classes[j] &= ~bit;
+                }
+            }
+        }
+    }
+
+    for (applicable_classes) |bits, field| {
+        std.debug.print("{} {b}\n", .{ field, bits });
+    }
+
+    var i: usize = 0;
+    var part2: usize = 1;
+    while (i < applicable_classes.len) : (i += 1) {
+        const j = for (applicable_classes) |classes, k| {
+                if (@popCount(u64, classes) == 1) break k;
+            } else unreachable;
+
+        const mask = applicable_classes[j];
+        const class_index = @ctz(u64, mask);
+        const name = in.classes[class_index].name;
+        std.debug.print("Allocate class {} to field {}\n", .{ name, j });
+
+        // Mark as used
+        for (applicable_classes) |*classes| {
+            classes.* &= ~mask;
+        }
+
+        if (std.mem.startsWith(u8, name, "duration")) {
+            part2 *= in.ticket.values[class_index];
+        }
+    }
+
+    aoc.print("Day 16, part 2: {}\n", .{ part2 });
 }
