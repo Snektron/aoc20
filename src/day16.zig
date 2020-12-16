@@ -84,7 +84,11 @@ pub fn main() !void {
     defer arena.deinit();
     const allocator = &arena.allocator;
 
-    var in = try parse(allocator);
+    const in = try parse(allocator);
+
+    var applicable_classes = try allocator.alloc(u64, in.ticket.values.len);
+    const all_set = (@as(u64, 1) << @intCast(u6, in.ticket.values.len)) - 1;
+    std.mem.set(u64, applicable_classes, all_set); // set all as applicable
 
     var part1: usize = 0;
     var write_index: usize = 0;
@@ -101,34 +105,19 @@ pub fn main() !void {
             }
         }
 
-        if (invalid) {
-            in.nearby_tickets[write_index] = ticket;
-            write_index += 1;
-        }
-    }
+        if (invalid) continue;
 
-    aoc.print("Day 16, part 1: {}\n", .{ part1 });
-
-    in.nearby_tickets.len = write_index;
-    var applicable_classes = try allocator.alloc(u64, in.ticket.values.len);
-    const all_set = (@as(u64, 1) << @intCast(u6, in.ticket.values.len)) - 1;
-    std.mem.set(u64, applicable_classes, all_set); // set all as applicable
-
-    for (in.nearby_tickets) |ticket| {
         for (ticket.values) |value, j| {
             for (in.classes) |class, i| {
-                const bit = @as(u64, 1) << @intCast(u6, i);
                 if (!class.inRange(value)) {
-                    // Mark field as not applicable
+                    const bit = @as(u64, 1) << @intCast(u6, i);
                     applicable_classes[j] &= ~bit;
                 }
             }
         }
     }
 
-    for (applicable_classes) |bits, field| {
-        std.debug.print("{} {b}\n", .{ field, bits });
-    }
+    aoc.print("Day 16, part 1: {}\n", .{ part1 });
 
     var i: usize = 0;
     var part2: usize = 1;
@@ -140,15 +129,14 @@ pub fn main() !void {
         const mask = applicable_classes[j];
         const class_index = @ctz(u64, mask);
         const name = in.classes[class_index].name;
-        std.debug.print("Allocate class {} to field {}\n", .{ name, j });
 
         // Mark as used
         for (applicable_classes) |*classes| {
             classes.* &= ~mask;
         }
 
-        if (std.mem.startsWith(u8, name, "duration")) {
-            part2 *= in.ticket.values[class_index];
+        if (std.mem.startsWith(u8, name, "departure")) {
+            part2 *= in.ticket.values[j];
         }
     }
 
