@@ -7,7 +7,7 @@ pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
 
     const run_all_step = b.step("run-all", "Run all the days");
-    const total_days = 18;
+    const total_days = 19;
 
     comptime var day: usize = 1;
     inline while (day <= total_days) : (day += 1) {
